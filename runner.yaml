@@ -1,0 +1,28 @@
+image: gitlab/gitlab-runner:alpine-v9.2.0
+
+gitlabUrl: http://104.154.130.94/
+runnerRegistrationToken: "k4xxaAZdixGwmETSzUDw"
+concurrent: 10
+checkInterval: 30
+
+runners:
+  image: docker:latest
+  privileged: true
+  environment:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay
+
+  builds:
+    cpuRequests: 100m
+    memoryRequests: 128Mi
+  services:
+    cpuRequests: 100m
+    memoryRequests: 128Mi
+  helpers:
+    cpuRequests: 100m
+    memoryRequests: 128Mi
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m

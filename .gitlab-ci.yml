@@ -1,0 +1,13 @@
+stages:
+- build
+
+Docker Build:
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay
+  script:
+  - docker info
+  - docker build -t kube-runner .
