@@ -1,25 +1,27 @@
-# Start the dev server.
-#
-# Note that the API server must
-# also be running.
-start:
-	@gopherjs -m -v serve --http :3000 http://104.154.130.94/john/kube-runner/docs/client
-.PHONY: start
 
-# Start the API server.
-api:
-	@go run main.go
-.PHONY: api
+build:
+	@docker build -t kube-runner .
+.PHONY: build
 
-# Display dependency graph.
-deps:
-	@godepgraph http://104.154.130.94/john/kube-runner/docs/client | dot -Tsvg | browser
-.PHONY: deps
+run:
+	@docker run -d -p 8080:8080 --name kube-runner kube-runner:latest
+.PHONY: run
 
-# Display size of dependencies.
-#- Any comment preceded by a dash is omitted.
-size:
-	@gopherjs build client/*.go -m -o /tmp/out.js
-	@du -h /tmp/out.js
-	@gopher-count /tmp/out.js | sort -nr
-.PHONY: size
+deploy-runners:
+	@kubectl --namespace gitlab delete configmap gitlab-runner
+	@kubectl --namespace gitlab delete deployment gitlab-runner
+	@kubectl create -f runner-configmap.yaml
+	@kubectl create -f runner-deploment.yaml
+.PHONY: update-config
+
+helm-install:
+	@helm install --name gitlab-runner -f runner-values.yaml gitlab/gitlab-runner
+.PHONY: helm-install
+
+helm-upgrade:
+	@helm upgrade -f runner-values.yaml gitlab-runner gitlab/gitlab-runner
+.PHONY: helm-install
+
+helm-delete:
+	@helm delete gitlab-runner --purge
+.PHONY: helm-delete
