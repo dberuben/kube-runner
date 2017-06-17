@@ -7,9 +7,12 @@ run:
 	@docker run -d -p 8080:8080 --name kube-runner kube-runner:latest
 .PHONY: run
 
+remove-runners:
+	- @kubectl --namespace gitlab delete configmap gitlab-runner
+	- @kubectl --namespace gitlab delete deployment gitlab-runner
+.PHONY: remove-runners
+
 deploy-runners:
-	@kubectl --namespace gitlab delete configmap gitlab-runner
-	@kubectl --namespace gitlab delete deployment gitlab-runner
 	@kubectl create -f runner-configmap.yaml
 	@kubectl create -f runner-deploment.yaml
 .PHONY: update-config
